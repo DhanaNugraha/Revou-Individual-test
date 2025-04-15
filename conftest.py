@@ -2,7 +2,6 @@ import pytest
 from middleware.before_request import auth_middleware
 from config.settings import create_app
 from instance.database import db as _db
-from shared.time import now_testing, testing_datetime
 import os
 
 @pytest.fixture

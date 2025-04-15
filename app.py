@@ -1,4 +1,4 @@
-from middleware.before_request import auth_middleware
+# from middleware.before_request import auth_middleware
 from config.settings import create_app
 import os
 
@@ -8,6 +8,6 @@ config_module = os.getenv("FLASK_CONFIG")
 
 app = create_app(config_module)
 
-auth_middleware(app)  # Register middleware
+# auth_middleware(app)  # Register middleware
 
 
