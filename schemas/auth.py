@@ -1,4 +1,5 @@
-from pydantic import BaseModel, field_validator
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict, field_validator
 import re
 
 
@@ -78,3 +79,24 @@ class UserLoginRequest(BaseModel):
             raise ValueError("Password must be at least 8 characters")
         
         return value
+
+
+class UserProfileResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    first_name: str | None
+    last_name: str | None
+    profile_image_url: str | None
+    bio: str | None
+    is_vendor: bool
+    is_admin: bool
+    last_login: datetime | None
+    created_at: datetime 
+
+    # pydantic can read ORM objects with this
+    model_config = ConfigDict(
+        from_attributes=True,  # Enables ORM mode for SQLAlchemy
+        extra='ignore'  # ignore extra fields
+    )
+        

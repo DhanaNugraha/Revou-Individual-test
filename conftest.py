@@ -1,5 +1,4 @@
 import pytest
-from middleware.before_request import auth_middleware
 from config.settings import create_app
 from instance.database import db as _db
 import models
@@ -10,7 +9,6 @@ import os
 def test_app():
     config_module = os.environ["FLASK_CONFIG"] = "config.testing"
     app = create_app(config_module)
-    auth_middleware(app)
     with app.app_context():
         _db.create_all()
         _db.session.rollback()
@@ -83,3 +81,7 @@ def mock_login_data():
         "email": "buyer@example.com",
         "password": "sustainable123",
     }
+
+@pytest.fixture
+def mock_token_data():
+    return "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0NDgxMjcxNSwianRpIjoiYTg1NDlkZjctYjJlNS00MWVkLWJlNzktMWY0NmNjMzZiNDk4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NDQ4MTI3MTUsImNzcmYiOiJiOWNkN2E4NC04YjUyLTQ5ZWEtYjY2ZC1jNTU3ZDQ1MzUzYzEiLCJ1c2VybmFtZSI6ImVjb19idXllciIsImVtYWlsIjoiYnV5ZXJAZXhhbXBsZS5jb20iLCJpc192ZW5kb3IiOmZhbHNlLCJpc19hZG1pbiI6ZmFsc2V9.4c1EcKMgb__oQLqBjptFxjl9_up9hbPXzNuguQZRGQQ"

@@ -15,3 +15,5 @@ def create_app(config_module = "config.local"):
     configure_app()
     app.register_blueprint(router.auth_router)
     return app
+
+

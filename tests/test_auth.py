@@ -190,3 +190,21 @@ def test_login_user_invalid_credential(client, mock_user_data, mock_login_data):
     assert login_user.status_code == 401
     assert login_user.json["success"] is False
     assert login_user.json["location"] == "view login user repo"
+
+
+# ---------------------------------------------------------------------------- Get Current User Tests ----------------------------------------------------------------------------
+
+def test_get_current_user(client, mock_user_data, mock_token_data):
+    # register mock user
+    register_user = client.post("/auth/register", json=mock_user_data)
+
+    assert register_user.status_code == 201
+
+    # get current user
+    get_current_user = client.get("/auth/me", headers={"Authorization": mock_token_data})
+
+    assert get_current_user.status_code == 200
+    assert get_current_user.json["success"] is True
+    assert get_current_user.json["user"]["email"] == mock_user_data["email"]
+    assert get_current_user.json["user"]["username"] == mock_user_data["username"]
+    assert len(get_current_user.json["user"]) == 11

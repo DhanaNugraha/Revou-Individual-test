@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token
 from pydantic import ValidationError
 from instance.database import db
 from repo.user import register_user_repo, update_last_login_repo, user_by_email_repo
-from schemas.auth import UserRegisterRequest, UserLoginRequest
+from schemas.auth import UserProfileResponse, UserRegisterRequest, UserLoginRequest
 
 def user_register_view(user_request):
     # Validate request data
@@ -90,3 +90,10 @@ def user_login_view(user_request):
             },
         }
     ), 200
+
+
+def get_user_view(user):
+    # filter output and validate user data
+    filtered_user_data = UserProfileResponse.model_validate(user)
+
+    return jsonify({"success": True, "user": filtered_user_data.model_dump()}), 200
