@@ -63,12 +63,8 @@ def users_data_inject(test_app):
             user_model = models.User(**user)
             users_list.append(user_model)
 
-        print("inserting user data to db")
-
         _db.session.add_all(users_list)
         _db.session.commit()
-
-        print("user data inserted")
 
         return users_list
     
@@ -77,6 +73,13 @@ def users_data_inject(test_app):
 def mock_user_data():
     return {
         "username": "eco_buyer",
+        "email": "buyer@example.com",
+        "password": "sustainable123",
+    }
+
+@pytest.fixture
+def mock_login_data():
+    return {
         "email": "buyer@example.com",
         "password": "sustainable123",
     }

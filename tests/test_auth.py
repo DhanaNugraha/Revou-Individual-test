@@ -3,6 +3,7 @@ import models
 # uv run pytest -v -s --cov=.
 # uv run pytest tests/test_auth.py -v -s --cov=.
 
+# ---------------------------------------------------------------------------- Register User Tests ----------------------------------------------------------------------------
 def test_register_user(client, db, mock_user_data ,users_data_inject):
     register_user = client.post("/auth/register", json=mock_user_data)
 
@@ -18,7 +19,7 @@ def test_register_user(client, db, mock_user_data ,users_data_inject):
     assert user.email == mock_user_data["email"]
     assert user.is_vendor is False
 
-def test_register_user_username_validation_error(client, db, mock_user_data, users_data_inject):
+def test_register_user_username_validation_error(client, mock_user_data):
     # test < 3 characters username
     mock_user_data["username"] = ""
     register_user = client.post("/auth/register", json=mock_user_data)
@@ -36,7 +37,7 @@ def test_register_user_username_validation_error(client, db, mock_user_data, use
     assert register_user.json["location"] == "view register user request validation"
 
 def test_register_user_password_validation_error(
-    client, db, mock_user_data, users_data_inject
+    client, mock_user_data
 ):
     # test < 8 characters username
     mock_user_data["password"] = "1234567"
@@ -47,7 +48,7 @@ def test_register_user_password_validation_error(
     assert register_user.json["location"] == "view register user request validation"
 
 def test_register_user_email_validation_error(
-    client, db, mock_user_data, users_data_inject
+    client, mock_user_data
 ):
     # test empty email
     mock_user_data["email"] = ""
@@ -82,7 +83,7 @@ def test_register_user_email_validation_error(
     assert register_user.json["location"] == "view register user request validation"
 
 def test_register_user_duplicates(
-    client, db, mock_user_data, users_data_inject
+    client, mock_user_data, users_data_inject
 ):
     # test email already exist
     mock_user_data["email"] = "john.doe@example.com"
@@ -101,19 +102,91 @@ def test_register_user_duplicates(
 
 
 
+# ---------------------------------------------------------------------------- Login User Tests ----------------------------------------------------------------------------
 
-# register ->
-# validation error
-# conflict error (email exist)
-# success
+def test_login_user(client, db, mock_user_data, mock_login_data):
+    # register mock user
+    register_user = client.post("/auth/register", json=mock_user_data)
+
+    assert register_user.status_code == 201
+
+    # login to mock user
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 200
+    assert login_user.json["success"] is True
+    assert login_user.json["user"]["email"] == mock_user_data["email"]
+    assert login_user.json["user"]["username"] == mock_user_data["username"]
 
 
+def test_login_user_password_validation_error(
+    client, mock_login_data
+):
+    # test < 8 characters username
+    mock_login_data["password"] = "1234567"
+    login_user = client.post("/auth/login", json=mock_login_data)
 
-# schemas\auth.py                   31      7    100%
-# views\auth.py                     16      5    81%
+    assert login_user.status_code == 400
+    assert login_user.json["success"] is False
+    assert login_user.json["location"] == "view login user request validation"
 
 
+def test_login_user_email_validation_error(
+    client, mock_login_data, users_data_inject
+):
+    # test empty email
+    mock_login_data["email"] = ""
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 400
+    assert login_user.json["success"] is False
+    assert login_user.json["location"] == "view login user request validation"
+
+    # test invalid email pattern
+    mock_login_data["email"] = "invalid_email_pattern"
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 400
+    assert login_user.json["success"] is False
+    assert login_user.json["location"] == "view login user request validation"
+
+    # test consecutive dots in email
+    mock_login_data["email"] = "a@bc..com"
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 400
+    assert login_user.json["success"] is False
+    assert login_user.json["location"] == "view login user request validation"
+
+    # test email too long
+    mock_login_data["email"] = "a" * 256 + "@example.com"
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 400
+    assert login_user.json["success"] is False
+    assert login_user.json["location"] == "view login user request validation"
 
 
+def test_login_user_invalid_credential(client, mock_user_data, mock_login_data):
+    # register mock user
+    register_user = client.post("/auth/register", json=mock_user_data)
 
+    assert register_user.status_code == 201
 
+    # save correct email for later
+    correct_email = mock_user_data["email"]
+
+    # test invalid email
+    mock_login_data["email"] = "john.wrong@example.com"
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 404
+
+    # test invalid password
+    mock_login_data["email"] = correct_email
+    mock_login_data["password"] = "wrong_password"
+    login_user = client.post("/auth/login", json=mock_login_data)
+
+    assert login_user.status_code == 401
+    assert login_user.json["success"] is False
+    assert login_user.json["location"] == "view login user repo"
