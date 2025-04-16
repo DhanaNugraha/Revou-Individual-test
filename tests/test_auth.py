@@ -3,7 +3,8 @@ import models
 # uv run pytest -v -s --cov=.
 # uv run pytest tests/test_auth.py -v -s --cov=.
 
-# ---------------------------------------------------------------------------- Register User Tests ----------------------------------------------------------------------------
+
+#---------------------------------------------------------------------------- Register User Tests ----------------------------------------------------------------------------
 def test_register_user(client, db, mock_user_data ,users_data_inject):
     register_user = client.post("/auth/register", json=mock_user_data)
 
@@ -102,7 +103,7 @@ def test_register_user_duplicates(
 
 
 
-# ---------------------------------------------------------------------------- Login User Tests ----------------------------------------------------------------------------
+#---------------------------------------------------------------------------- Login User Tests ----------------------------------------------------------------------------
 
 def test_login_user(client, db, mock_user_data, mock_login_data):
     # register mock user
@@ -192,7 +193,7 @@ def test_login_user_invalid_credential(client, mock_user_data, mock_login_data):
     assert login_user.json["location"] == "view login user repo"
 
 
-# ---------------------------------------------------------------------------- Get Current User Tests ----------------------------------------------------------------------------
+#---------------------------------------------------------------------------- Get Current User Tests ----------------------------------------------------------------------------
 
 def test_get_current_user(client, mock_user_data, mock_token_data):
     # register mock user
@@ -208,3 +209,13 @@ def test_get_current_user(client, mock_user_data, mock_token_data):
     assert get_current_user.json["user"]["email"] == mock_user_data["email"]
     assert get_current_user.json["user"]["username"] == mock_user_data["username"]
     assert len(get_current_user.json["user"]) == 11
+
+
+def test_get_current_user_missing_user(client, mock_token_data):
+    # get current user
+    get_current_user = client.get(
+        "/auth/me", headers={"Authorization": mock_token_data}
+    )
+
+    assert get_current_user.status_code == 404
+   
