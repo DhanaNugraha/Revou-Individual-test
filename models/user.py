@@ -35,10 +35,10 @@ class User(db.Model, BaseModel):
 
     @password.setter
     def password(self, password):
-        self._password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
-        return check_password_hash(self._password_hash, password)
+        return check_password_hash(self.password_hash, password)
         
     def update_last_login(self):
         self.last_login = time.now()

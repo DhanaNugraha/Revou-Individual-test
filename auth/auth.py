@@ -1,27 +1,27 @@
 from functools import wraps
 from flask import jsonify, request
-# from repo.user import user_by_id_repo
+from repo.user import user_by_id_repo
 
 # used by middleware
 # return user data except password
-# def claim_user_from_token(user_id_from_token):
+def claim_user_from_token(user_id_from_token):
 
-#     user = user_by_id_repo(user_id_from_token)
+    user = user_by_id_repo(user_id_from_token)
 
-#     filtered_user = {
-#         "id": user.id,
-#         "email": user.email,
-#         "first_name": user.first_name,
-#         "last_name": user.last_name,
-#         "phone_number": user.phone_number,
-#         "address": user.address,
-#         "date_of_birth": user.date_of_birth,
-#         "created_at": user.created_at,
-#         "updated_at": user.updated_at,
-#         "role": user.role
-#     }
+    filtered_user = {
+        "id": user.id,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "phone_number": user.phone_number,
+        "address": user.address,
+        "date_of_birth": user.date_of_birth,
+        "created_at": user.created_at,
+        "updated_at": user.updated_at,
+        "role": user.role
+    }
 
-#     return filtered_user
+    return filtered_user
 
 # used by any function as wrapper
 def login_required(f):
