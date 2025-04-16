@@ -202,7 +202,7 @@ def test_get_current_user(client, mock_user_data, mock_token_data):
     assert register_user.status_code == 201
 
     # get current user
-    get_current_user = client.get("/auth/me", headers={"Authorization": mock_token_data})
+    get_current_user = client.get("/auth/me", headers=mock_token_data)
 
     assert get_current_user.status_code == 200
     assert get_current_user.json["success"] is True
@@ -214,7 +214,7 @@ def test_get_current_user(client, mock_user_data, mock_token_data):
 def test_get_current_user_missing_user(client, mock_token_data):
     # get current user
     get_current_user = client.get(
-        "/auth/me", headers={"Authorization": mock_token_data}
+        "/auth/me", headers=mock_token_data
     )
 
     assert get_current_user.status_code == 404
