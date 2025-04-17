@@ -15,7 +15,6 @@ def user_by_email_repo(email):
     )
 
 def register_user_repo(user_data):
-    print("in user repo")
     new_user = User(
         username=user_data.username,
         email=user_data.email,
@@ -33,4 +32,19 @@ def register_user_repo(user_data):
 
 def update_last_login_repo(queried_user):
     queried_user.last_login = datetime_from_string(str(now()))
+    db.session.commit()
+
+def update_user_repo(user, user_data):
+    if user_data.bio:
+        user.bio = user_data.bio
+
+    if user_data.profile_image_url:
+        user.profile_image_url = user_data.profile_image_url
+
+    if user_data.first_name:
+        user.first_name = user_data.first_name
+
+    if user_data.last_name:
+        user.last_name = user_data.last_name
+
     db.session.commit()

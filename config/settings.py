@@ -14,6 +14,7 @@ def create_app(config_module = "config.local"):
     init_jwt(app)
     configure_app()
     app.register_blueprint(router.auth_router)
+    app.register_blueprint(router.user_router)
     return app
 
 
