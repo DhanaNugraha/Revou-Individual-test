@@ -1,6 +1,6 @@
 from instance.database import db
 from models.user import User
-from shared.time import now, date_from_string, datetime_from_string
+from shared.time import now, datetime_from_string
 
 def user_by_id_repo(user_id):
     return db.one_or_404(

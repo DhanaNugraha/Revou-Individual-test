@@ -8,9 +8,7 @@ from .product import (
     SustainabilityAttribute,
     Product,
     ProductImage,
-    ProductSustainability,
     ProductTag,
-    ProductTagMapping,
 )
 from .order import (
     ShoppingCart, 

@@ -95,3 +95,39 @@ def mock_update_user_data():
         "first_name": "test update first name",
         "last_name": "test update last name",
     }
+
+@pytest.fixture
+def mock_vendor_data():
+    return {
+        "username": "eco_seller",
+        "email": "seller@example.com",
+        "password": "sustainable123",
+        "is_vendor": True
+    }
+
+
+@pytest.fixture
+def mock_vendor_login_data():
+    return {
+        "email": "seller@example.com",
+        "password": "sustainable123",
+    }
+
+
+@pytest.fixture
+def mock_vendor_token_data():
+    return {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0NDkwMzY4MCwianRpIjoiODczZjM4OTMtMWRjYy00YTRmLThlNTYtYWEzYWFhNTA4N2M1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NDQ5MDM2ODAsImNzcmYiOiJhMzU4YTczOS1lOTA3LTQ4YzItOTI3YS00ZGM4MmRmNjhkMjIiLCJ1c2VybmFtZSI6ImVjb19zZWxsZXIiLCJlbWFpbCI6InNlbGxlckBleGFtcGxlLmNvbSIsImlzX3ZlbmRvciI6dHJ1ZSwiaXNfYWRtaW4iOmZhbHNlfQ.wxF4C495DnFjDn3Vq4K7g1VSnCT9Xci8BblYi7ALIkY"
+    }
+
+@pytest.fixture
+def mock_create_product_data():
+    return {
+        "name": "testproduct",
+        "description": "test product description",
+        "price": 25.99,
+        "tags": ["eco-friendly", "handmade"],
+        "sustainability_attributes": ["organic", "carbon-neutral"],
+        "stock_quantity": 100,
+        "min_order_quantity": 2,
+    }

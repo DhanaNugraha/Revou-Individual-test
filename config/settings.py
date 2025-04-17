@@ -6,7 +6,6 @@ import router
 from config import configure_app
 
 
-
 def create_app(config_module = "config.local"):
     app = Flask(__name__)
     app.config.from_object(config_module)
@@ -15,6 +14,7 @@ def create_app(config_module = "config.local"):
     configure_app()
     app.register_blueprint(router.auth_router)
     app.register_blueprint(router.user_router)
+    app.register_blueprint(router.products_router)
     return app
 
 

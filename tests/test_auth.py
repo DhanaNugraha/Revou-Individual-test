@@ -20,6 +20,21 @@ def test_register_user(client, db, mock_user_data ,users_data_inject):
     assert user.email == mock_user_data["email"]
     assert user.is_vendor is False
 
+def test_register_vendor(client, db, mock_vendor_data):
+    register_vendor = client.post("/auth/register", json=mock_vendor_data)
+
+    assert register_vendor.status_code == 201
+    assert register_vendor.json["success"] is True
+
+    vendor = db.session.execute(
+        db.select(models.User).filter_by(email=mock_vendor_data["email"])
+    ).scalar_one()
+
+    assert vendor.id == 1
+    assert vendor.username == mock_vendor_data["username"]
+    assert vendor.email == mock_vendor_data["email"]
+    assert vendor.is_vendor is True
+
 def test_register_user_username_validation_error(client, mock_user_data):
     # test < 3 characters username
     mock_user_data["username"] = ""
@@ -118,6 +133,20 @@ def test_login_user(client, db, mock_user_data, mock_login_data):
     assert login_user.json["success"] is True
     assert login_user.json["user"]["email"] == mock_user_data["email"]
     assert login_user.json["user"]["username"] == mock_user_data["username"]
+
+def test_login_vendor(client, db, mock_vendor_data, mock_vendor_login_data):
+    # register mock user
+    register_user = client.post("/auth/register", json=mock_vendor_data)
+
+    assert register_user.status_code == 201
+
+    # login to mock user
+    login_user = client.post("/auth/login", json=mock_vendor_login_data)
+
+    assert login_user.status_code == 200
+    assert login_user.json["success"] is True
+    assert login_user.json["user"]["email"] == mock_vendor_data["email"]
+    assert login_user.json["user"]["username"] == mock_vendor_data["username"]
 
 
 def test_login_user_password_validation_error(

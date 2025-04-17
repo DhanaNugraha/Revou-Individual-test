@@ -1,5 +1,4 @@
 from flask import jsonify
-from flask_jwt_extended import create_access_token
 from pydantic import ValidationError
 from instance.database import db
 from repo.user import update_user_repo, user_by_id_repo
