@@ -94,6 +94,15 @@ def test_update_user_profile_image_error(
     assert update_user.json["success"] is False
     assert update_user.json["location"] == "view update user profile request validation"
 
+    # post None
+    mock_update_user_data["profile_image_url"] = None
+
+    update_user = client.put(
+        "/user/me", json=mock_update_user_data, headers=mock_token_data
+    )
+
+    assert update_user.status_code == 200
+
 
 def test_update_user_validation_error(
     client, mock_user_data, mock_token_data, mock_update_user_data

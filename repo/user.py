@@ -35,16 +35,21 @@ def update_last_login_repo(queried_user):
     db.session.commit()
 
 def update_user_repo(user, user_data):
+    print("here")
     if user_data.bio:
+        print(user_data.bio)
         user.bio = user_data.bio
 
     if user_data.profile_image_url:
+        print(user_data.profile_image_url)
         user.profile_image_url = user_data.profile_image_url
 
     if user_data.first_name:
+        print(user_data.first_name)
         user.first_name = user_data.first_name
 
     if user_data.last_name:
+        print(user_data.last_name)
         user.last_name = user_data.last_name
 
     db.session.commit()

@@ -33,6 +33,9 @@ class UserProfileUpdateRequest(BaseModel):
     
     @field_validator("profile_image_url")
     def validate_url(cls, value):
+        if not value:
+            return value
+        
         # Basic URL regex pattern
         url_pattern = re.compile(
             r"^(https?://)"  # http:// or https://
@@ -52,3 +55,8 @@ class UserProfileUpdateRequest(BaseModel):
             raise ValueError("URL too long (max 500 chars)")
 
         return value.strip()
+
+    model_config = ConfigDict(
+        from_attributes=True,  # Can read SQLAlchemy model
+        extra="ignore",  # ignore extra fields
+    )
