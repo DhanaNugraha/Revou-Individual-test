@@ -2,6 +2,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import List
 from decimal import Decimal
 
+from models.product import ProductTag
+
 
 class ProductCreateRequest(BaseModel):
     name: str 
@@ -56,10 +58,45 @@ class ProductCreateRequest(BaseModel):
         return value
 
 
-
 class ProductCreatedResponse(BaseModel):
     id: int
     name: str
     vendor_id: int
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)  # Can read SQLAlchemy model
+
+
+class ProductListFilters(BaseModel):
+    category_id: List[int] = None
+    min_price: List[float] = None
+    max_price: List[float] = None
+    tags: List[str] = None
+
+    @field_validator("min_price", "max_price")
+    def validate_prices(cls, value):
+        if value is not None and value[0] < 1:
+            raise ValueError("Price cannot be negative")
+        return value[0]
+    
+    @field_validator("category_id")
+    def validate_category_id(cls, value):
+        return value[0]
+            
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class ProductListResponse(BaseModel):
+    id: int
+    name: str
+    price: float
+    category_id: int | None #no category
+    tags: List[object] | str  
+    vendor_id: int
+
+    model_config = ConfigDict(from_attributes=True)  # Can read SQLAlchemy model
+
+    @field_validator("tags")
+    def validate_tags(cls, value):
+        # repr to convert class object to string
+        return repr([tag.name for tag in value])

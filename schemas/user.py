@@ -13,7 +13,7 @@ class PublicUserProfileResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(
-        from_attributes=True,  # Enables SQLAlchemy compatibility
+        from_attributes=True,  # Can read SQLAlchemy model
         extra="ignore",  # ignore extra fields
     )
 

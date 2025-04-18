@@ -65,6 +65,52 @@ def users_data_inject(test_app):
         _db.session.commit()
 
         return users_list
+
+
+@pytest.fixture
+def products_data_inject(test_app):
+    products_data = [
+        {
+            "id": 1,
+            "name": "Product 1",
+            "description": "Description 1",
+            "price": 10.99,
+            "category_id": 1,
+            "vendor_id": 1,
+            "stock_quantity": 10,
+            "min_order_quantity": 1,
+            "average_rating": 4.5,
+            "review_count": 5,
+            "is_active": True,
+            "created_at": datetime_from_string(str(now())),
+            "updated_at": datetime_from_string(str(now())),
+        },
+        {
+            "id": 2,
+            "name": "Product 2",
+            "description": "Description 2",
+            "price": 19.99,
+            "category_id": 2,
+            "vendor_id": 2,
+            "stock_quantity": 5,
+            "min_order_quantity": 1,
+            "average_rating": 4.0,
+            "review_count": 3,
+            "is_active": True,
+            "created_at": datetime_from_string(str(now())),
+            "updated_at": datetime_from_string(str(now())),
+        },
+    ]
+    with test_app.app_context():
+        products_list = []
+        for product in products_data:
+            product_model = models.Product(**product)
+            products_list.append(product_model)
+        
+        _db.session.add_all(products_list)
+        _db.session.commit()
+
+        return products_list
     
 
 @pytest.fixture
@@ -131,3 +177,27 @@ def mock_create_product_data():
         "stock_quantity": 100,
         "min_order_quantity": 2,
     }
+
+@pytest.fixture
+def mock_multiple_create_product_data():
+    return [
+        {
+            "name": "testproduct 1",
+            "description": "test product description 1",
+            "price": 25.99,
+            "tags": ["eco-friendly", "handmade"],
+            "sustainability_attributes": ["organic", "carbon-neutral"],
+            "stock_quantity": 100,
+            "min_order_quantity": 2,
+            "category_id": 1
+        },
+        {
+            "name": "testproduct 2",
+            "description": "test product description 2",
+            "price": 15.99,
+            "tags": ["eco-friendly", "cheap"],
+            "sustainability_attributes": ["organic", "carbon-neutral"],
+            "stock_quantity": 100,
+            "min_order_quantity": 2,
+        }
+    ]

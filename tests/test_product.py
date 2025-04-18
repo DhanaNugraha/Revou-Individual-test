@@ -137,3 +137,50 @@ def test_create_product_order_quantity_validation_error (client, mock_create_pro
     assert product.status_code == 400
     assert product.json["success"] is False
     assert product.json["location"] == "view create product request validation"
+
+
+# ---------------------------------------------------------------------------- Get product Tests ----------------------------------------------------------------------------
+
+def test_get_all_product(client, products_data_inject):
+    product = client.get("/products")
+
+    assert product.status_code == 200
+    assert product.json["success"] is True
+    assert len(product.json["products"]) == 2
+
+def test_get_product_with_args(
+    client, mock_multiple_create_product_data, mock_vendor_token_data, mock_vendor_data
+):
+    # register vendor
+    register_vendor = client.post("/auth/register", json=mock_vendor_data)
+    assert register_vendor.status_code == 201
+
+    # insert product
+    for product in mock_multiple_create_product_data:
+        product = client.post("/products", json=product, headers=mock_vendor_token_data)
+
+        assert product.status_code == 201
+
+    # get product
+    product = client.get("/products?min_price=10&page=1&per_page=20&max_price=30&tags=eco-friendly&tags=handmade&category_id=1")
+
+    assert product.status_code == 200
+    assert product.json["success"] is True
+    assert len(product.json["products"]) == 1
+    assert product.json["pagination"]["total"] == 1
+
+def test_get_product_invalid_args(client):
+    product = client.get(
+        "/products?min_price=-1"
+    )
+
+    assert product.status_code == 400
+    assert product.json["success"] is False
+    assert product.json["location"] == "view list products request validation"
+
+    product = client.get("/products?max_price=-1")
+
+    assert product.status_code == 400
+    assert product.json["success"] is False
+    assert product.json["location"] == "view list products request validation"
+

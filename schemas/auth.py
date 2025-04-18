@@ -96,7 +96,7 @@ class UserProfileResponse(BaseModel):
 
     # pydantic can read ORM objects with this
     model_config = ConfigDict(
-        from_attributes=True,  # Enables ORM mode for SQLAlchemy
-        extra='ignore'  # ignore extra fields
+        from_attributes=True,  # Can read SQLAlchemy model
+        extra="ignore",  # ignore extra fields
     )
         

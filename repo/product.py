@@ -49,3 +49,30 @@ def process_sustainability_repo(sustainability_attributes, product):
         # create many to many bi-directional relationship
         # appends product.id and attribute.id to association table
         product.sustainability_attributes.append(attribute)
+
+
+def get_products_list_repo(product_filter, request_args):
+    # base query
+    products = db.select(Product).filter_by(is_active=True)
+    
+    # extra filters if any
+    if product_filter.category_id:
+        products = products.filter_by(category_id=product_filter.category_id)
+
+    if product_filter.tags:
+        # assuming that it joins with the help of association
+        products = products.join(Product.tags, isouter=True).filter(ProductTag.name.in_(product_filter.tags))
+
+    if product_filter.min_price:
+        products = products.filter(Product.price >= product_filter.min_price)
+
+    if product_filter.max_price:
+        products = products.filter(Product.price <= product_filter.max_price)
+
+    # prevent duplicates from join
+    products = products.group_by(Product.id)
+
+    # pagination of query
+    paginated_products = db.paginate(products)
+
+    return paginated_products
