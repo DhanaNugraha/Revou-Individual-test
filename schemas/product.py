@@ -1,8 +1,7 @@
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import List
 from decimal import Decimal
-
-from models.product import ProductTag
 
 
 class ProductCreateRequest(BaseModel):
@@ -100,3 +99,35 @@ class ProductListResponse(BaseModel):
     def validate_tags(cls, value):
         # repr to convert class object to string
         return repr([tag.name for tag in value])
+
+
+class ProductDetailResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    price: float 
+    category_id: int | None
+    vendor_id: int
+    tags: List[object] | str
+    sustainability_attributes: List[object] | str
+    stock_quantity: int
+    min_order_quantity: int
+    created_at: datetime
+    updated_at: datetime
+    # greater than or equal to 0 and less than or equal to 5
+    average_rating: float | None
+    review_count: int | None
+
+    @field_validator("tags")
+    def validate_tags(cls, value):
+        # repr to convert class object to string
+        return repr([tag.name for tag in value])
+    
+    @field_validator("sustainability_attributes")
+    def validate_sustainability_attributes(cls, value):
+        # repr to convert class object to string
+        return repr([tag.name for tag in value])
+
+    model_config = ConfigDict(
+        from_attributes=True,  # Can read SQLAlchemy model
+    )

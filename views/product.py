@@ -1,8 +1,8 @@
 from flask import jsonify
 from pydantic import ValidationError
 from instance.database import db
-from repo.product import create_product_repo, get_products_list_repo, process_sustainability_repo, process_tags_repo
-from schemas.product import ProductCreateRequest, ProductCreatedResponse, ProductListFilters, ProductListResponse
+from repo.product import create_product_repo, get_product_detail_repo, get_products_list_repo, process_sustainability_repo, process_tags_repo
+from schemas.product import ProductCreateRequest, ProductCreatedResponse, ProductDetailResponse, ProductListFilters, ProductListResponse
 
 def create_product_view(user, product_request):
     if not user.is_vendor:
@@ -59,3 +59,18 @@ def list_products_view(request_args):
     
     except Exception as e:
         return jsonify({"message": str(e), "success": False, "location": "view list products repo"}), 500
+    
+
+def get_product_detail_view(product_id):
+    try:
+        product = get_product_detail_repo(product_id)
+
+        serialized_product = ProductDetailResponse.model_validate(product).model_dump()
+        
+        return jsonify({"success": True, "product": serialized_product}), 200
+    
+    except ValidationError as e:
+        return jsonify({"message": str(e), "success": False, "location": "view get product detail data validation"}), 500
+
+    except Exception as e:
+        return jsonify({"message": str(e), "success": False, "location": "view get product detail repo"}), 500

@@ -184,3 +184,13 @@ def test_get_product_invalid_args(client):
     assert product.json["success"] is False
     assert product.json["location"] == "view list products request validation"
 
+
+# ---------------------------------------------------------------------------- Get product details Tests ----------------------------------------------------------------------------
+
+def test_get_product_details(client, products_data_inject):
+    product = client.get("/products/1")
+
+    assert product.status_code == 200
+    assert product.json["success"] is True
+    assert product.json["product"]["id"] == 1
+    assert len(product.json["product"]) == 14

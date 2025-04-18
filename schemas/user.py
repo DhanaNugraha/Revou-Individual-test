@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict, HttpUrl, field_validator
+import re
+from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
 
 
@@ -20,7 +21,7 @@ class PublicUserProfileResponse(BaseModel):
 
 class UserProfileUpdateRequest(BaseModel):
     bio: str | None = None
-    profile_image_url: HttpUrl | None = None  # Validates URL format
+    profile_image_url: str | None = None 
     first_name: str | None = None
     last_name: str | None = None
 
@@ -29,3 +30,25 @@ class UserProfileUpdateRequest(BaseModel):
         if value and len(value) > 500:
             raise ValueError("Bio cannot exceed 500 characters")
         return value
+    
+    @field_validator("profile_image_url")
+    def validate_url(cls, value):
+        # Basic URL regex pattern
+        url_pattern = re.compile(
+            r"^(https?://)"  # http:// or https://
+            r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"  # domain
+            r"localhost|"  # localhost
+            r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # or ip
+            r"(?::\d+)?"  # optional port
+            r"(?:/?|[/?]\S+)$",
+            re.IGNORECASE,
+        )
+
+        if not url_pattern.match(value):
+            raise ValueError("Invalid URL format")
+
+        # Additional checks
+        if len(value) > 500:
+            raise ValueError("URL too long (max 500 chars)")
+
+        return value.strip()

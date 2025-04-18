@@ -65,6 +65,36 @@ def test_update_user_bio_error(
     assert update_user.json["location"] == "view update user profile request validation"
 
 
+def test_update_user_profile_image_error(
+    client, mock_user_data, mock_token_data, mock_update_user_data
+):
+    register_user = client.post("/auth/register", json=mock_user_data)
+
+    assert register_user.status_code == 201
+
+    # invalid url pattern
+    mock_update_user_data["profile_image_url"] = "t"
+
+    update_user = client.put(
+        "/user/me", json=mock_update_user_data, headers=mock_token_data
+    )
+
+    assert update_user.status_code == 400
+    assert update_user.json["success"] is False
+    assert update_user.json["location"] == "view update user profile request validation"
+
+    # test profile image too long
+    mock_update_user_data["profile_image_url"] = "https://example.com/profile.jpg" + "a" * 600
+
+    update_user = client.put(
+        "/user/me", json=mock_update_user_data, headers=mock_token_data
+    )
+
+    assert update_user.status_code == 400
+    assert update_user.json["success"] is False
+    assert update_user.json["location"] == "view update user profile request validation"
+
+
 def test_update_user_validation_error(
     client, mock_user_data, mock_token_data, mock_update_user_data
 ):

@@ -76,3 +76,12 @@ def get_products_list_repo(product_filter, request_args):
     paginated_products = db.paginate(products)
 
     return paginated_products
+
+
+def get_product_detail_repo(product_id):
+    product = db.one_or_404(
+        db.select(Product).filter_by(id=product_id),
+        description=f"No product with id '{product_id}'.",
+    )
+
+    return product
