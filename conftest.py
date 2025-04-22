@@ -202,3 +202,18 @@ def mock_multiple_create_product_data():
             "min_order_quantity": 2,
         }
     ]
+
+
+@pytest.fixture
+def mock_update_product_data():
+    return {
+        "name": "updated product",
+        "description": "test product description",
+        "price": 25.99,
+        "category_id": 1,
+        "tags": ["eco-friendly", "handmade"],
+        "sustainability_attributes": ["organic", "carbon-neutral"],
+        "stock_quantity": 100,
+        "min_order_quantity": 2,
+        "is_active": True
+    }

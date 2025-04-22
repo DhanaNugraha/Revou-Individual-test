@@ -144,7 +144,6 @@ class ProductUpdateRequest(BaseModel):
     min_order_quantity: Optional[int] = None
     is_active: Optional[bool] = None
 
-    # check if no input still go here?
     @field_validator("name")
     def validate_name(cls, value):
         if len(value) < 3 or len(value) > 100:
