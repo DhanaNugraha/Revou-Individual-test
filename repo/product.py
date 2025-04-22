@@ -28,7 +28,6 @@ def process_tags_repo(tags_list, product):
         if not tag:
             tag = ProductTag(name=tag_name)
             db.session.add(tag)
-            db.session.flush()
 
         # create many to many bi-directional relationship
         # appends product.id and tag.id to association table
@@ -44,7 +43,6 @@ def process_sustainability_repo(sustainability_attributes, product):
         if not attribute:
             attribute = SustainabilityAttribute(name=sustainability_attribute)
             db.session.add(attribute)
-            db.session.flush()
 
         # create many to many bi-directional relationship
         # appends product.id and attribute.id to association table
@@ -83,5 +81,39 @@ def get_product_detail_repo(product_id):
         db.select(Product).filter_by(id=product_id),
         description=f"No product with id '{product_id}'.",
     )
+
+    return product
+
+
+def update_product_repo(user_id, product_id, update_data):
+    # Verify product exists and belongs to current vendor
+    product = db.one_or_404(
+        db.select(Product).filter_by(id=product_id, vendor_id=user_id),
+        description=f"No product with id '{product_id}' and vendor id '{user_id}'.",    
+    )
+
+    # Apply updates
+    if update_data.name is not None:
+        product.name = update_data.name
+
+    if update_data.description is not None:
+        product.description = update_data.description
+
+    if update_data.price is not None:
+        product.price = float(
+            update_data.price
+        )  # Convert Decimal to float for SQLAlchemy
+
+    if update_data.category_id is not None:
+        product.category_id = update_data.category_id
+
+    if update_data.is_active is not None:
+        product.is_active = update_data.is_active
+
+    if update_data.stock_quantity is not None:
+        product.stock_quantity = update_data.stock_quantity
+
+    if update_data.min_order_quantity is not None:
+        product.min_order_quantity = update_data.min_order_quantity
 
     return product

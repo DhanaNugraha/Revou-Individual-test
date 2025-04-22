@@ -18,8 +18,6 @@ def get_public_user_profile_view(user_id):
 
 def update_user_profile_view(user, user_request):
     try:
-        print("here")
-        print(user_request)
         user_data_validated = UserProfileUpdateRequest.model_validate(user_request)
         
         update_user_repo(user, user_data_validated)

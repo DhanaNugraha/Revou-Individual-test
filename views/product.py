@@ -1,8 +1,8 @@
 from flask import jsonify
 from pydantic import ValidationError
 from instance.database import db
-from repo.product import create_product_repo, get_product_detail_repo, get_products_list_repo, process_sustainability_repo, process_tags_repo
-from schemas.product import ProductCreateRequest, ProductCreatedResponse, ProductDetailResponse, ProductListFilters, ProductListResponse
+from repo.product import create_product_repo, get_product_detail_repo, get_products_list_repo, process_sustainability_repo, process_tags_repo, update_product_repo
+from schemas.product import ProductCreateRequest, ProductCreatedResponse, ProductDetailResponse, ProductListFilters, ProductListResponse, ProductUpdateRequest
 
 def create_product_view(user, product_request):
     if not user.is_vendor:
@@ -14,10 +14,10 @@ def create_product_view(user, product_request):
         # flush product and get product id
         product = create_product_repo(product_data_validated, user.id)
 
-        # add new tags to tags table and append relationship of product to tags
+        # add new tags to tags table and append relationship of product to association table
         process_tags_repo(product_data_validated.tags, product)
 
-        # add new sustainability attributes to sustainability_attributes table and append relationship of product to sustainability attributes
+        # add new sus attrs to sus_attrs table and append relationship of product to association table
         process_sustainability_repo(product_data_validated.sustainability_attributes, product)
 
         db.session.commit()
@@ -74,3 +74,38 @@ def get_product_detail_view(product_id):
 
     except Exception as e:
         return jsonify({"message": str(e), "success": False, "location": "view get product detail repo"}), 500
+    
+
+def update_product_view(user, update_request, product_id):
+    try:
+        # validate data
+        update_data_validated = ProductUpdateRequest.model_validate(update_request)
+
+        # update product and get the product
+        product = update_product_repo(user.id, product_id, update_data_validated)
+
+        if update_data_validated.tags:
+            # clear existing tags
+            product.tags.clear()
+
+            # add new tags to tags table and append relationship of product to association table
+            process_tags_repo(update_data_validated.tags, product)
+
+        if update_data_validated.sustainability_attributes:
+            # clear existing sustainability attributes
+            product.sustainability_attributes.clear()
+
+            # add new sus attrs to sus_attrs table and append relationship of product to association table
+            process_sustainability_repo(update_data_validated.sustainability_attributes, product)
+
+        db.session.commit()
+
+        return jsonify({"message": "Product updated successfully", "product": ProductDetailResponse.model_validate(product).model_dump(), "success": True}), 200
+
+    except ValidationError as e:
+        return jsonify({"message": str(e), "success": False, "location": "view update product request validation"}), 400
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e), "success": False, "location": "view update product repo"}), 500
+
