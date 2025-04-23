@@ -9,7 +9,7 @@ user_router = Blueprint("user_router", __name__, url_prefix="/user")
 def get_public_profile(user_id):
     return get_public_user_profile_view(user_id)
 
-
+# private path
 @user_router.route("/me", methods=["PUT"])
 @jwt_required()
 def update_profile():

@@ -2,6 +2,8 @@ import re
 from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
 
+# -------------------------------------------------- Register User --------------------------------------------------
+
 
 class PublicUserProfileResponse(BaseModel):
     id: int
@@ -19,9 +21,12 @@ class PublicUserProfileResponse(BaseModel):
     )
 
 
+# -------------------------------------------------- Update User --------------------------------------------------
+
+
 class UserProfileUpdateRequest(BaseModel):
     bio: str | None = None
-    profile_image_url: str | None = None 
+    profile_image_url: str | None = None
     first_name: str | None = None
     last_name: str | None = None
 
@@ -30,12 +35,12 @@ class UserProfileUpdateRequest(BaseModel):
         if value and len(value) > 500:
             raise ValueError("Bio cannot exceed 500 characters")
         return value
-    
+
     @field_validator("profile_image_url")
     def validate_url(cls, value):
         if not value:
             return value
-        
+
         # Basic URL regex pattern
         url_pattern = re.compile(
             r"^(https?://)"  # http:// or https://

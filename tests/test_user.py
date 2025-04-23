@@ -5,6 +5,7 @@ import models
 
 # ---------------------------------------------------------------------------- Get public profile ----------------------------------------------------------------------------
 
+
 def test_get_public_profile(client, users_data_inject):
     public_user = client.get("/user/1")
 
@@ -25,12 +26,16 @@ def test_get_public_profile_not_exist(client, users_data_inject):
 # ---------------------------------------------------------------------------- Update user ----------------------------------------------------------------------------
 
 
-def test_update_user(client, mock_user_data, mock_token_data, mock_update_user_data, db):
+def test_update_user(
+    client, mock_user_data, mock_token_data, mock_update_user_data, db
+):
     register_user = client.post("/auth/register", json=mock_user_data)
 
     assert register_user.status_code == 201
 
-    update_user = client.put("/user/me", json=mock_update_user_data, headers=mock_token_data)
+    update_user = client.put(
+        "/user/me", json=mock_update_user_data, headers=mock_token_data
+    )
 
     assert update_user.status_code == 200
     assert update_user.json["success"] is True
@@ -84,7 +89,9 @@ def test_update_user_profile_image_error(
     assert update_user.json["location"] == "view update user profile request validation"
 
     # test profile image too long
-    mock_update_user_data["profile_image_url"] = "https://example.com/profile.jpg" + "a" * 600
+    mock_update_user_data["profile_image_url"] = (
+        "https://example.com/profile.jpg" + "a" * 600
+    )
 
     update_user = client.put(
         "/user/me", json=mock_update_user_data, headers=mock_token_data

@@ -117,3 +117,8 @@ def update_product_repo(user_id, product_id, update_data):
         product.min_order_quantity = update_data.min_order_quantity
 
     return product
+
+
+def soft_delete_product_repo(product):
+    product.is_active = False
+    db.session.commit()

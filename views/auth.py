@@ -5,23 +5,28 @@ from instance.database import db
 from repo.user import register_user_repo, update_last_login_repo, user_by_email_repo
 from schemas.auth import UserProfileResponse, UserRegisterRequest, UserLoginRequest
 
+# ------------------------------------------------------ Register User --------------------------------------------------
+
+
 def user_register_view(user_request):
     # Validate request data
     try:
         user_data_validated = UserRegisterRequest.model_validate(user_request)
 
     except ValidationError as e:
-        return jsonify({
-            "message": str(e),
-            "success": False,
-            "location": "view register user request validation"
-        }), 400
-    
+        return jsonify(
+            {
+                "message": str(e),
+                "success": False,
+                "location": "view register user request validation",
+            }
+        ), 400
+
     # Create user into database
     try:
         register_user_repo(user_data_validated)
 
-    except Exception as e:  
+    except Exception as e:
         db.session.rollback()
         return jsonify(
             {"message": str(e), "success": False, "location": "view create user repo"},
@@ -38,18 +43,23 @@ def user_register_view(user_request):
     ), 201
 
 
+# ------------------------------------------------------ Login User --------------------------------------------------
+
+
 def user_login_view(user_request):
     # Validate request data
     try:
         user_data_validated = UserLoginRequest.model_validate(user_request)
 
     except ValidationError as e:
-        return jsonify({
-            "message": str(e),
-            "success": False,
-            "location": "view login user request validation"
-        }), 400
-    
+        return jsonify(
+            {
+                "message": str(e),
+                "success": False,
+                "location": "view login user request validation",
+            }
+        ), 400
+
     # get user by email
     user = user_by_email_repo(user_data_validated.email)
 
@@ -62,7 +72,7 @@ def user_login_view(user_request):
                 "location": "view login user repo",
             }
         ), 401
-    
+
     # create access token
     access_token = create_access_token(
         identity=str(user.id),
@@ -90,6 +100,9 @@ def user_login_view(user_request):
             },
         }
     ), 200
+
+
+# ------------------------------------------------------ Get User --------------------------------------------------
 
 
 def get_user_view(user):
